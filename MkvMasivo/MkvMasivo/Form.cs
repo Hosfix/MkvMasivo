@@ -9,9 +9,10 @@ namespace MkvMasivo
 {
     public partial class Form : System.Windows.Forms.Form
     {
-        private object filesGlobal = null;
+        private object _filesGlobal = null;
         private string[] _videoFormats = new string[] { "webm", "mkv", "vob", "ogv", "ogg", "drc", "gif", "gifv", "mng", "avi", "MTS", "M2TS", "mov", "qt", "wmv", "yuv", "rm", "rmvb", "asf", "amv", "mp4", "m4p", "m4v", "mpg", "mp2", "mpe", "mpv", "mpeg", "m2v", "svi", "3gp", "3g2", "mxf", "roq", "nsv", "flv", "f4v", "f4p", "f4a", "f4b" };
-
+        private bool _fileExist = false;
+        private string[] _filesFound = new string[0];
         public Form()
         {
             InitializeComponent();
@@ -37,7 +38,7 @@ namespace MkvMasivo
                     string[] files = GetAllFilesRecursive(fbd.SelectedPath, new string[0]);
                     string[] extensions = GetAllExtension(files);
 
-                    filesGlobal = files;
+                    _filesGlobal = files;
                     txtFolder.Text = fbd.SelectedPath;
                     chkExtensions.DataSource = extensions;
                     Cursor = Cursors.Default;
@@ -52,6 +53,8 @@ namespace MkvMasivo
             richLanguage.Text = null;
             txtFolder.Text = null;
             richOrder.Text = null;
+            _fileExist = false;
+            _filesGlobal = null;
         }
         private string[] GetAllFilesRecursive(string folderPath, string[] files)
         {
@@ -129,12 +132,21 @@ namespace MkvMasivo
 
         private void ExecuteCmd(string file, string outputFolder, string language, string trackOrder)
         {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+            var destinyPath = outputFolder + "\\" + file.Split('\\').Last();
+            if (File.Exists(destinyPath))
+            {
+                _fileExist = true;
+                var oldLength = _filesFound.Length;
+                Array.Resize(ref _filesFound, oldLength + 1);
+                _filesFound[oldLength] = file.Split('\\').Last();
+                return;
+            }
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized,
                 FileName = "cmd.exe",
-                Arguments = "/c start /wait mkvmerge.exe -o \"" + outputFolder + "\\" + file.Split('\\').Last() + "\" " + language + " \"" + file + "\" " + trackOrder
+                Arguments = "/c start /wait mkvmerge.exe -o \"" + destinyPath + "\" " + language + " \"" + file + "\" " + trackOrder
             };
             process.StartInfo = startInfo;
             process.Start();
@@ -143,7 +155,7 @@ namespace MkvMasivo
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            var files = filesGlobal as string[];
+            var files = _filesGlobal as string[];
             var extensions = new string[0];
             if (files == null || files.Count() <= 0)
             {
@@ -184,8 +196,20 @@ namespace MkvMasivo
                             progressBar.Value = report.PercentComplete;
                             progressBar.Update();
                         };
-                        await ProcessData(filesGlobal as string[], fbd.SelectedPath, extensions, richLanguage.Text, richOrder.Text, progress);
+                        await ProcessData(_filesGlobal as string[], fbd.SelectedPath, extensions, richLanguage.Text, richOrder.Text, progress);
+
                         MessageBox.Show("Proceso Terminado", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        if (_fileExist)
+                        {
+                            string existingFiles = "";
+                            foreach (var fileName in _filesFound)
+                            {
+                                existingFiles = existingFiles + "\r\n" + fileName;
+                            }
+                            MessageBox.Show("Los siguientes ficheros ya existian " + existingFiles, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+
                         ClearAll();
                     }
                 }
