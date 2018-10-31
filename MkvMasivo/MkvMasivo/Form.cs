@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -50,15 +51,15 @@ namespace MkvMasivo
         {
             progressBar.Value = 0;
             chkExtensions.DataSource = null;
-            richLanguage.Text = null;
+            richCommand.Text = null;
             txtFolder.Text = null;
-            richOrder.Text = null;
             _fileExist = false;
             _filesGlobal = null;
         }
         private string[] GetAllFilesRecursive(string folderPath, string[] files)
         {
             var folderFiles = Directory.GetFiles(folderPath);
+
             var folders = Directory.GetDirectories(folderPath);
 
             foreach (var folder in folders)
@@ -91,66 +92,12 @@ namespace MkvMasivo
 
         private void btnPaste_Click(object sender, EventArgs e)
         {
-            richLanguage.Text = Clipboard.GetText().Replace("^", "");
+            richCommand.Text = Clipboard.GetText();
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(richLanguage.Text);
-        }
-
-        private void btnCopyOrder_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(richOrder.Text);
-        }
-
-        private void btnPasteOrder_Click(object sender, EventArgs e)
-        {
-            richOrder.Text = Clipboard.GetText();
-        }
-
-        private Task ProcessData(string[] files, string outputFolder, string[] extensions, string language, string trackOrder, IProgress<ProgressReport> progress)
-        {
-
-            int index = 1;
-            int totalProcess = files.Length;
-            var progressReport = new ProgressReport();
-            return Task.Run(() =>
-            {
-                foreach (var file in files)
-                {
-                    progressReport.PercentComplete = index++ * 100 / totalProcess;
-                    progress.Report(progressReport);
-
-                    if (extensions.Contains(file.Split('.').Last()))
-                    {
-                        ExecuteCmd(file, outputFolder, language, trackOrder);
-                    }
-                }
-            });
-        }
-
-        private void ExecuteCmd(string file, string outputFolder, string language, string trackOrder)
-        {
-            var destinyPath = outputFolder + "\\" + file.Split('\\').Last();
-            if (File.Exists(destinyPath))
-            {
-                _fileExist = true;
-                var oldLength = _filesFound.Length;
-                Array.Resize(ref _filesFound, oldLength + 1);
-                _filesFound[oldLength] = file.Split('\\').Last();
-                return;
-            }
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized,
-                FileName = "cmd.exe",
-                Arguments = "/c start /wait mkvmerge.exe -o \"" + destinyPath + "\" " + language + " \"" + file + "\" " + trackOrder
-            };
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
+            Clipboard.SetText(richCommand.Text);
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -165,11 +112,7 @@ namespace MkvMasivo
             {
                 MessageBox.Show("No hay extensiones a modificar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            else if (String.IsNullOrEmpty(richLanguage.Text))
-            {
-                MessageBox.Show("No se ha insertado el comando de MKVToolnix", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else if (String.IsNullOrEmpty(richOrder.Text))
+            else if (String.IsNullOrEmpty(richCommand.Text))
             {
                 MessageBox.Show("No se ha insertado el comando de MKVToolnix", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -196,7 +139,7 @@ namespace MkvMasivo
                             progressBar.Value = report.PercentComplete;
                             progressBar.Update();
                         };
-                        await ProcessData(_filesGlobal as string[], fbd.SelectedPath, extensions, richLanguage.Text, richOrder.Text, progress);
+                        await ProcessData(_filesGlobal as string[], fbd.SelectedPath, extensions, richCommand.Text, progress);
 
                         MessageBox.Show("Proceso Terminado", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -214,6 +157,58 @@ namespace MkvMasivo
                     }
                 }
             }
+        }
+
+        private Task ProcessData(string[] files, string outputFolder, string[] extensions, string command, IProgress<ProgressReport> progress)
+        {
+
+            int index = 1;
+            int totalProcess = files.Length;
+            var progressReport = new ProgressReport();
+            return Task.Run(() =>
+            {
+                foreach (var file in files)
+                {
+                    progressReport.PercentComplete = index++ * 100 / totalProcess;
+                    progress.Report(progressReport);
+
+                    if (extensions.Contains(file.Split('.').Last()))
+                    {
+                        ExecuteCmd(file, outputFolder, command);
+                    }
+                }
+            });
+        }
+
+        private void ExecuteCmd(string file, string outputFolder, string command)
+        {
+            var destinyPath = outputFolder + "\\" + file.Split('\\').Last();
+            destinyPath = destinyPath.Substring(0, destinyPath.LastIndexOf(".")) + ".mkv";
+
+            if (File.Exists(destinyPath))
+            {
+                _fileExist = true;
+                var oldLength = _filesFound.Length;
+                Array.Resize(ref _filesFound, oldLength + 1);
+                _filesFound[oldLength] = file.Split('\\').Last();
+                return;
+            }
+
+            string trueCommand = command.Substring(command.IndexOf("--language 0:"));
+            string fileName = file.Substring(0, file.LastIndexOf("."));
+            string pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
+            var cmd =  "/c start /wait G:/Programas/MkvToolnix/mkvmerge.exe -o \"" + destinyPath + "\" " + Regex.Replace(trueCommand, pattern, "$1" + fileName + "$3");
+
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized,
+                FileName = "cmd.exe",
+                Arguments = cmd
+            };
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
         }
     }
 }
