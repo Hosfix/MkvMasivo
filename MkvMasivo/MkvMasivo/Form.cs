@@ -16,7 +16,7 @@ namespace MkvMasivo
         private bool _fileExist = false;
         private List<string> _filesFound = new List<string>();
         private bool _startStop = false;
-
+        private string _mkvPath = "mkvmerge.exe";
         public Form()
         {
             InitializeComponent();
@@ -233,11 +233,7 @@ namespace MkvMasivo
             string fileName = file.Substring(0, file.LastIndexOf("."));
             string pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
 
-            var cmd = "/c start /wait mkvmerge.exe -o \"" + destinyPath + "\" " + Regex.Replace(trueCommand, pattern, "$1" + fileName + "$3");
-
-            #if DEBUG
-            cmd = "/c start /wait G:/Programas/MkvToolnix/mkvmerge.exe -o \"" + destinyPath + "\" " + Regex.Replace(trueCommand, pattern, "$1" + fileName + "$3");
-            #endif
+            var cmd = "/c start /wait " + _mkvPath + " --ui-language es --output \"" + destinyPath + "\" " + Regex.Replace(trueCommand, pattern, "$1" + fileName + "$3");
 
             Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo
@@ -256,7 +252,7 @@ namespace MkvMasivo
             if (_startStop)
             {
                 if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                    _startStop = true;
+                    _startStop = false;
                 e.Cancel = true;
             }
         }
