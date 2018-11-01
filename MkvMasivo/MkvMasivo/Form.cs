@@ -257,6 +257,7 @@ namespace MkvMasivo
             {
                 if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                     _startStop = true;
+                e.Cancel = true;
             }
         }
     }
