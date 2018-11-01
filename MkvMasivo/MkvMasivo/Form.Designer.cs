@@ -34,7 +34,7 @@
             this.richCommand = new System.Windows.Forms.RichTextBox();
             this.btnPaste = new System.Windows.Forms.Button();
             this.btnCopy = new System.Windows.Forms.Button();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.btnRun = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.labelControl1 = new System.Windows.Forms.Label();
             this.chkExtensions = new System.Windows.Forms.CheckedListBox();
@@ -60,12 +60,12 @@
             this.txtFolder.Size = new System.Drawing.Size(1040, 31);
             this.txtFolder.TabIndex = 1;
             // 
-            // richLanguage
+            // richCommand
             // 
             this.richCommand.Enabled = false;
             this.richCommand.Location = new System.Drawing.Point(332, 112);
             this.richCommand.Margin = new System.Windows.Forms.Padding(6);
-            this.richCommand.Name = "richLanguage";
+            this.richCommand.Name = "richCommand";
             this.richCommand.Size = new System.Drawing.Size(732, 395);
             this.richCommand.TabIndex = 3;
             this.richCommand.Text = "";
@@ -90,20 +90,21 @@
             this.btnCopy.Text = "Copy";
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
-            // btnStart
+            // btnRun
             // 
-            this.btnStart.Location = new System.Drawing.Point(1080, 463);
-            this.btnStart.Margin = new System.Windows.Forms.Padding(6);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(150, 44);
-            this.btnStart.TabIndex = 6;
-            this.btnStart.Text = "Start";
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnRun.Location = new System.Drawing.Point(1080, 463);
+            this.btnRun.Margin = new System.Windows.Forms.Padding(6);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(150, 44);
+            this.btnRun.TabIndex = 6;
+            this.btnRun.Text = "Start";
+            this.btnRun.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(24, 519);
             this.progressBar.Margin = new System.Windows.Forms.Padding(6);
+            this.progressBar.MarqueeAnimationSpeed = 80;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(1206, 35);
             this.progressBar.TabIndex = 7;
@@ -146,7 +147,7 @@
             this.Controls.Add(this.chkExtensions);
             this.Controls.Add(this.labelControl1);
             this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.btnRun);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.btnPaste);
             this.Controls.Add(this.richCommand);
@@ -157,6 +158,7 @@
             this.Name = "Form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MkvMassive";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -169,7 +171,7 @@
         private System.Windows.Forms.RichTextBox richCommand;
         private System.Windows.Forms.Button btnPaste;
         private System.Windows.Forms.Button btnCopy;
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnRun;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label labelControl1;
         private System.Windows.Forms.CheckedListBox chkExtensions;
