@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,11 +18,16 @@ namespace MkvMasivo
         private List<string> _filesFound = new List<string>();
         private bool _startStop = false;
         private string _mkvPath = "mkvmerge.exe";
+
+        #region Constructor
+
         public Form()
         {
             InitializeComponent();
             FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.Text = "MkvMassive " + fileVersion.FileVersion;
+
+            ClearAll();
 
             if (!File.Exists("mkvmerge.exe"))
             {
@@ -30,25 +36,148 @@ namespace MkvMasivo
             }
         }
 
+        #endregion Constructor
+
+        #region Events
+
         private void btnForlder_Click(object sender, EventArgs e)
         {
-            using (var fbd = new FolderBrowserDialog())
+            try
             {
-                fbd.Description = "Carpeta de origen";
-                DialogResult result = fbd.ShowDialog();
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                using (var fbd = new FolderBrowserDialog())
                 {
-                    Cursor = Cursors.WaitCursor;
-                    string[] files = GetAllFilesRecursive(fbd.SelectedPath, new string[0]);
-                    string[] extensions = GetAllExtension(files);
+                    fbd.Description = "Carpeta de origen";
+                    DialogResult result = fbd.ShowDialog();
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        Cursor = Cursors.WaitCursor;
+                        string[] files = GetAllFilesRecursive(fbd.SelectedPath, new string[0]);
+                        string[] extensions = GetAllExtension(files);
 
-                    _filesGlobal = files.ToList();
-                    txtFolder.Text = fbd.SelectedPath;
-                    chkExtensions.DataSource = extensions;
-                    Cursor = Cursors.Default;
+                        _filesGlobal = files.ToList();
+                        txtFolder.Text = fbd.SelectedPath;
+                        chkExtensions.DataSource = extensions;
+                        Cursor = Cursors.Default;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                CreateLogFiles Err = new CreateLogFiles();
+                Err.ErrorLog("Logs/", ex.Message);
+                MessageBox.Show("Error fatal: más información en el fichero log de errores", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_startStop)
+            {
+                if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    _startStop = false;
+                e.Cancel = true;
+            }
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(richCommand.Text);
+        }
+
+        private void btnPaste_Click(object sender, EventArgs e)
+        {
+            richCommand.Text = Clipboard.GetText();
+        }
+
+        private async void btnStart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_startStop)
+                {
+                    var extensions = new string[0];
+                    if (_filesGlobal == null || _filesGlobal.Count() <= 0)
+                    {
+                        MessageBox.Show("No hay ficheros", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else if (chkExtensions.CheckedItems.Count <= 0)
+                    {
+                        MessageBox.Show("No hay extensiones a modificar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else if (String.IsNullOrEmpty(richCommand.Text))
+                    {
+                        MessageBox.Show("No se ha insertado el comando de MKVToolnix", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        foreach (var check in chkExtensions.CheckedItems)
+                        {
+                            var oldLength = extensions.Length;
+                            Array.Resize(ref extensions, oldLength + 1);
+                            extensions[oldLength] = check.ToString();
+                        }
+
+                        using (var fbd = new FolderBrowserDialog())
+                        {
+                            fbd.Description = "Carpeta de destino";
+
+                            DialogResult result = fbd.ShowDialog();
+
+                            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                            {
+                                _startStop = true;
+                                CambiarEstadoControles(false);
+                                BtnRun.Text = "Stop";
+                                var progress = new Progress<ProgressReport>();
+                                progress.ProgressChanged += (o, report) =>
+                                {
+                                    progressBar.Value = report.PercentComplete;
+                                    LabelPercentage.Text = report.PercentComplete + "%";
+                                    progressBar.Update();
+                                };
+                                await ProcessData(_filesGlobal, fbd.SelectedPath, extensions, richCommand.Text, progress);
+
+                                if (_startStop)
+                                    MessageBox.Show("Proceso Terminado", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                else
+                                    MessageBox.Show("Se ha cancelado el proceso", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                if (_fileExist)
+                                {
+                                    string existingFiles = "";
+                                    foreach (var fileName in _filesFound)
+                                    {
+                                        existingFiles = existingFiles + "\r\n" + fileName;
+                                    }
+                                    MessageBox.Show("Los siguientes ficheros ya existian " + existingFiles, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+
+                                _startStop = false;
+                                ClearAll();
+                                CambiarEstadoControles(true);
+                                BtnRun.Text = "Start";
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        _startStop = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                CreateLogFiles Err = new CreateLogFiles();
+                Err.ErrorLog("Logs/", ex.Message);
+                MessageBox.Show("Error fatal: más información en el fichero log de errores", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion Events
+
+        #region Process
 
         private string[] GetAllFilesRecursive(string folderPath, string[] files)
         {
@@ -84,98 +213,12 @@ namespace MkvMasivo
             return completeFiles;
         }
 
-        private void btnPaste_Click(object sender, EventArgs e)
-        {
-            richCommand.Text = Clipboard.GetText();
-        }
-
-        private void btnCopy_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(richCommand.Text);
-        }
-
-        private async void btnStart_Click(object sender, EventArgs e)
-        {
-            if (!_startStop)
-            {
-                var extensions = new string[0];
-                if (_filesGlobal == null || _filesGlobal.Count() <= 0)
-                {
-                    MessageBox.Show("No hay ficheros", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else if (chkExtensions.CheckedItems.Count <= 0)
-                {
-                    MessageBox.Show("No hay extensiones a modificar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else if (String.IsNullOrEmpty(richCommand.Text))
-                {
-                    MessageBox.Show("No se ha insertado el comando de MKVToolnix", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    foreach (var check in chkExtensions.CheckedItems)
-                    {
-                        var oldLength = extensions.Length;
-                        Array.Resize(ref extensions, oldLength + 1);
-                        extensions[oldLength] = check.ToString();
-                    }
-
-                    using (var fbd = new FolderBrowserDialog())
-                    {
-                        fbd.Description = "Carpeta de destino";
-
-                        DialogResult result = fbd.ShowDialog();
-
-                        if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                        {
-                            _startStop = true;
-                            CambiarEstadoControles(false);
-                            btnRun.Text = "Stop";
-                            var progress = new Progress<ProgressReport>();
-                            progress.ProgressChanged += (o, report) =>
-                            {
-                                progressBar.Value = report.PercentComplete;
-                                progressBar.Update();
-                            };
-                            await ProcessData(_filesGlobal, fbd.SelectedPath, extensions, richCommand.Text, progress);
-
-                            if (_startStop)
-                                MessageBox.Show("Proceso Terminado", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            else
-                                MessageBox.Show("Se ha cancelado el proceso", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            if (_fileExist)
-                            {
-                                string existingFiles = "";
-                                foreach (var fileName in _filesFound)
-                                {
-                                    existingFiles = existingFiles + "\r\n" + fileName;
-                                }
-                                MessageBox.Show("Los siguientes ficheros ya existian " + existingFiles, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-
-                            _startStop = false;
-                            ClearAll();
-                            CambiarEstadoControles(true);
-                            btnRun.Text = "Start";
-
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                    _startStop = false;
-            }
-        }
-
         private void CambiarEstadoControles(bool status)
         {
             chkExtensions.Enabled = status;
-            btnCopy.Enabled = status;
-            btnForlder.Enabled = status;
-            btnPaste.Enabled = status;
+            BtnCopy.Enabled = status;
+            BtnForlder.Enabled = status;
+            BtnPaste.Enabled = status;
         }
 
         private void ClearAll()
@@ -186,6 +229,7 @@ namespace MkvMasivo
             txtFolder.Text = null;
             _fileExist = false;
             _filesGlobal = null;
+            LabelPercentage.Text = "0%";
         }
 
         private Task ProcessData(List<string> files, string outputFolder, string[] extensions, string command, IProgress<ProgressReport> progress)
@@ -238,7 +282,7 @@ namespace MkvMasivo
             Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
                 Arguments = cmd
             };
@@ -247,14 +291,6 @@ namespace MkvMasivo
             process.WaitForExit();
         }
 
-        private void Form_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (_startStop)
-            {
-                if (MessageBox.Show("¿Quiere cancelar la operación?", "Información", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                    _startStop = false;
-                e.Cancel = true;
-            }
-        }
+        #endregion Process
     }
 }

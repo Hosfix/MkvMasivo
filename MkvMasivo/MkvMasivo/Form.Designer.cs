@@ -29,27 +29,28 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
-            this.btnForlder = new System.Windows.Forms.Button();
+            this.BtnForlder = new System.Windows.Forms.Button();
             this.txtFolder = new System.Windows.Forms.TextBox();
             this.richCommand = new System.Windows.Forms.RichTextBox();
-            this.btnPaste = new System.Windows.Forms.Button();
-            this.btnCopy = new System.Windows.Forms.Button();
-            this.btnRun = new System.Windows.Forms.Button();
+            this.BtnPaste = new System.Windows.Forms.Button();
+            this.BtnCopy = new System.Windows.Forms.Button();
+            this.BtnRun = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.labelControl1 = new System.Windows.Forms.Label();
+            this.LabelComando = new System.Windows.Forms.Label();
             this.chkExtensions = new System.Windows.Forms.CheckedListBox();
-            this.lblExtensions = new System.Windows.Forms.Label();
+            this.LabelExtensions = new System.Windows.Forms.Label();
+            this.LabelPercentage = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // btnForlder
+            // BtnForlder
             // 
-            this.btnForlder.Location = new System.Drawing.Point(1080, 19);
-            this.btnForlder.Margin = new System.Windows.Forms.Padding(6);
-            this.btnForlder.Name = "btnForlder";
-            this.btnForlder.Size = new System.Drawing.Size(150, 44);
-            this.btnForlder.TabIndex = 0;
-            this.btnForlder.Text = "Select...";
-            this.btnForlder.Click += new System.EventHandler(this.btnForlder_Click);
+            this.BtnForlder.Location = new System.Drawing.Point(1080, 19);
+            this.BtnForlder.Margin = new System.Windows.Forms.Padding(6);
+            this.BtnForlder.Name = "BtnForlder";
+            this.BtnForlder.Size = new System.Drawing.Size(150, 44);
+            this.BtnForlder.TabIndex = 0;
+            this.BtnForlder.Text = "Select...";
+            this.BtnForlder.Click += new System.EventHandler(this.btnForlder_Click);
             // 
             // txtFolder
             // 
@@ -66,57 +67,57 @@
             this.richCommand.Location = new System.Drawing.Point(332, 112);
             this.richCommand.Margin = new System.Windows.Forms.Padding(6);
             this.richCommand.Name = "richCommand";
-            this.richCommand.Size = new System.Drawing.Size(732, 395);
+            this.richCommand.Size = new System.Drawing.Size(732, 391);
             this.richCommand.TabIndex = 3;
             this.richCommand.Text = "";
             // 
-            // btnPaste
+            // BtnPaste
             // 
-            this.btnPaste.Location = new System.Drawing.Point(1080, 167);
-            this.btnPaste.Margin = new System.Windows.Forms.Padding(6);
-            this.btnPaste.Name = "btnPaste";
-            this.btnPaste.Size = new System.Drawing.Size(150, 44);
-            this.btnPaste.TabIndex = 4;
-            this.btnPaste.Text = "Paste";
-            this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
+            this.BtnPaste.Location = new System.Drawing.Point(1080, 167);
+            this.BtnPaste.Margin = new System.Windows.Forms.Padding(6);
+            this.BtnPaste.Name = "BtnPaste";
+            this.BtnPaste.Size = new System.Drawing.Size(150, 44);
+            this.BtnPaste.TabIndex = 4;
+            this.BtnPaste.Text = "Paste";
+            this.BtnPaste.Click += new System.EventHandler(this.btnPaste_Click);
             // 
-            // btnCopy
+            // BtnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(1080, 112);
-            this.btnCopy.Margin = new System.Windows.Forms.Padding(6);
-            this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(150, 44);
-            this.btnCopy.TabIndex = 5;
-            this.btnCopy.Text = "Copy";
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            this.BtnCopy.Location = new System.Drawing.Point(1080, 112);
+            this.BtnCopy.Margin = new System.Windows.Forms.Padding(6);
+            this.BtnCopy.Name = "BtnCopy";
+            this.BtnCopy.Size = new System.Drawing.Size(150, 44);
+            this.BtnCopy.TabIndex = 5;
+            this.BtnCopy.Text = "Copy";
+            this.BtnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
-            // btnRun
+            // BtnRun
             // 
-            this.btnRun.Location = new System.Drawing.Point(1080, 463);
-            this.btnRun.Margin = new System.Windows.Forms.Padding(6);
-            this.btnRun.Name = "btnRun";
-            this.btnRun.Size = new System.Drawing.Size(150, 44);
-            this.btnRun.TabIndex = 6;
-            this.btnRun.Text = "Start";
-            this.btnRun.Click += new System.EventHandler(this.btnStart_Click);
+            this.BtnRun.Location = new System.Drawing.Point(1080, 463);
+            this.BtnRun.Margin = new System.Windows.Forms.Padding(6);
+            this.BtnRun.Name = "BtnRun";
+            this.BtnRun.Size = new System.Drawing.Size(150, 44);
+            this.BtnRun.TabIndex = 6;
+            this.BtnRun.Text = "Start";
+            this.BtnRun.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(24, 519);
             this.progressBar.Margin = new System.Windows.Forms.Padding(6);
-            this.progressBar.MarqueeAnimationSpeed = 80;
+            this.progressBar.MarqueeAnimationSpeed = 50;
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(1206, 35);
+            this.progressBar.Size = new System.Drawing.Size(1044, 35);
             this.progressBar.TabIndex = 7;
             // 
-            // labelControl1
+            // LabelComando
             // 
-            this.labelControl1.Location = new System.Drawing.Point(332, 75);
-            this.labelControl1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(736, 31);
-            this.labelControl1.TabIndex = 9;
-            this.labelControl1.Text = "Comando MkvToolNix";
+            this.LabelComando.Location = new System.Drawing.Point(332, 75);
+            this.LabelComando.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.LabelComando.Name = "LabelComando";
+            this.LabelComando.Size = new System.Drawing.Size(736, 31);
+            this.LabelComando.TabIndex = 9;
+            this.LabelComando.Text = "Comando MkvToolNix";
             // 
             // chkExtensions
             // 
@@ -127,15 +128,25 @@
             this.chkExtensions.Size = new System.Drawing.Size(290, 394);
             this.chkExtensions.TabIndex = 14;
             // 
-            // lblExtensions
+            // LabelExtensions
             // 
-            this.lblExtensions.AutoSize = true;
-            this.lblExtensions.Location = new System.Drawing.Point(26, 75);
-            this.lblExtensions.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lblExtensions.Name = "lblExtensions";
-            this.lblExtensions.Size = new System.Drawing.Size(130, 25);
-            this.lblExtensions.TabIndex = 15;
-            this.lblExtensions.Text = "Extensiones";
+            this.LabelExtensions.AutoSize = true;
+            this.LabelExtensions.Location = new System.Drawing.Point(26, 75);
+            this.LabelExtensions.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.LabelExtensions.Name = "LabelExtensions";
+            this.LabelExtensions.Size = new System.Drawing.Size(130, 25);
+            this.LabelExtensions.TabIndex = 15;
+            this.LabelExtensions.Text = "Extensiones";
+            // 
+            // LabelPercentage
+            // 
+            this.LabelPercentage.Location = new System.Drawing.Point(1077, 519);
+            this.LabelPercentage.Margin = new System.Windows.Forms.Padding(3);
+            this.LabelPercentage.Name = "LabelPercentage";
+            this.LabelPercentage.Size = new System.Drawing.Size(153, 35);
+            this.LabelPercentage.TabIndex = 16;
+            this.LabelPercentage.Text = "0%";
+            this.LabelPercentage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form
             // 
@@ -143,16 +154,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1254, 570);
-            this.Controls.Add(this.lblExtensions);
+            this.Controls.Add(this.LabelPercentage);
+            this.Controls.Add(this.LabelExtensions);
             this.Controls.Add(this.chkExtensions);
-            this.Controls.Add(this.labelControl1);
+            this.Controls.Add(this.LabelComando);
             this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.btnRun);
-            this.Controls.Add(this.btnCopy);
-            this.Controls.Add(this.btnPaste);
+            this.Controls.Add(this.BtnRun);
+            this.Controls.Add(this.BtnCopy);
+            this.Controls.Add(this.BtnPaste);
             this.Controls.Add(this.richCommand);
             this.Controls.Add(this.txtFolder);
-            this.Controls.Add(this.btnForlder);
+            this.Controls.Add(this.BtnForlder);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Form";
@@ -166,16 +178,17 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnForlder;
+        private System.Windows.Forms.Button BtnForlder;
         private System.Windows.Forms.TextBox txtFolder;
         private System.Windows.Forms.RichTextBox richCommand;
-        private System.Windows.Forms.Button btnPaste;
-        private System.Windows.Forms.Button btnCopy;
-        private System.Windows.Forms.Button btnRun;
+        private System.Windows.Forms.Button BtnPaste;
+        private System.Windows.Forms.Button BtnCopy;
+        private System.Windows.Forms.Button BtnRun;
         private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.Label labelControl1;
+        private System.Windows.Forms.Label LabelComando;
         private System.Windows.Forms.CheckedListBox chkExtensions;
-        private System.Windows.Forms.Label lblExtensions;
+        private System.Windows.Forms.Label LabelExtensions;
+        private System.Windows.Forms.Label LabelPercentage;
     }
 }
 
