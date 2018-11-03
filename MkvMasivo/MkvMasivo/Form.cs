@@ -19,6 +19,7 @@ namespace MkvMasivo
         private bool _startStop = false;
         private string _mkvPath = "mkvmerge.exe";
         private static readonly string _pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
+        private static readonly string _patternExtension = @"(\^\""\^\(\^\"" \^\"")(.*?)(\^\"" \^\""\^\)\^\"")";
 
 
         #region Constructor
@@ -149,7 +150,7 @@ namespace MkvMasivo
                                     string existingFiles = "";
                                     foreach (var fileName in _filesFound)
                                     {
-                                        existingFiles = existingFiles + "\r\n" + fileName;
+                                        existingFiles = existingFiles + ", " + fileName;
                                     }
                                     MessageBox.Show("Los siguientes ficheros ya existian " + existingFiles, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 }
@@ -259,7 +260,7 @@ namespace MkvMasivo
                     }
                 }
 
-                progressReport.PercentComplete = index * 100 / totalProcess;
+                progressReport.PercentComplete = 100;
                 progressReport.Information = "Fin";
                 progress.Report(progressReport);
             });
@@ -274,13 +275,19 @@ namespace MkvMasivo
             {
                 _fileExist = true;
                 _filesFound.Add(file.Split('\\').Last());
+                Thread.Sleep(50);
                 return;
             }
 
             string trueCommand = command.Substring(command.IndexOf("--language 0:"));
             string fileName = file.Substring(0, file.LastIndexOf("."));
+            string fileNameAndExtension = file.Split('\\').Last();
 
-            ExecuteProcess(_mkvPath + " --ui-language es --output \"" + destinyPath + "\" " + Regex.Replace(trueCommand, _pattern, "$1" + fileName + "$3") + " & exit");
+            Regex rgx = new Regex(_patternExtension);
+            string firstProcess = Regex.Replace(trueCommand, _pattern, "$1" + fileName + "$3");
+            string finalResult = rgx.Replace(firstProcess, "$1" + fileName + "." + file.Split('.').Last() + "$3", 1);
+
+            ExecuteProcess(_mkvPath + " --output \"" + destinyPath + "\" " + finalResult + " & exit");
         }
 
         public void ExecuteProcess(string Command)
