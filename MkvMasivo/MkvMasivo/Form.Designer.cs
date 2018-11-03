@@ -39,7 +39,7 @@
             this.LabelComando = new System.Windows.Forms.Label();
             this.chkExtensions = new System.Windows.Forms.CheckedListBox();
             this.LabelExtensions = new System.Windows.Forms.Label();
-            this.LabelPercentage = new System.Windows.Forms.Label();
+            this.LabelInformation = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // BtnForlder
@@ -107,7 +107,7 @@
             this.progressBar.Margin = new System.Windows.Forms.Padding(6);
             this.progressBar.MarqueeAnimationSpeed = 50;
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(1044, 35);
+            this.progressBar.Size = new System.Drawing.Size(1206, 35);
             this.progressBar.TabIndex = 7;
             // 
             // LabelComando
@@ -138,23 +138,23 @@
             this.LabelExtensions.TabIndex = 15;
             this.LabelExtensions.Text = "Extensiones";
             // 
-            // LabelPercentage
+            // LabelInformation
             // 
-            this.LabelPercentage.Location = new System.Drawing.Point(1077, 519);
-            this.LabelPercentage.Margin = new System.Windows.Forms.Padding(3);
-            this.LabelPercentage.Name = "LabelPercentage";
-            this.LabelPercentage.Size = new System.Drawing.Size(153, 35);
-            this.LabelPercentage.TabIndex = 16;
-            this.LabelPercentage.Text = "0%";
-            this.LabelPercentage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelInformation.Location = new System.Drawing.Point(26, 563);
+            this.LabelInformation.Margin = new System.Windows.Forms.Padding(3);
+            this.LabelInformation.Name = "LabelInformation";
+            this.LabelInformation.Size = new System.Drawing.Size(1204, 35);
+            this.LabelInformation.TabIndex = 16;
+            this.LabelInformation.Text = "Information";
+            this.LabelInformation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1254, 570);
-            this.Controls.Add(this.LabelPercentage);
+            this.ClientSize = new System.Drawing.Size(1254, 604);
+            this.Controls.Add(this.LabelInformation);
             this.Controls.Add(this.LabelExtensions);
             this.Controls.Add(this.chkExtensions);
             this.Controls.Add(this.LabelComando);
@@ -188,7 +188,7 @@
         private System.Windows.Forms.Label LabelComando;
         private System.Windows.Forms.CheckedListBox chkExtensions;
         private System.Windows.Forms.Label LabelExtensions;
-        private System.Windows.Forms.Label LabelPercentage;
+        private System.Windows.Forms.Label LabelInformation;
     }
 }
 

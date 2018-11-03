@@ -18,6 +18,8 @@ namespace MkvMasivo
         private List<string> _filesFound = new List<string>();
         private bool _startStop = false;
         private string _mkvPath = "mkvmerge.exe";
+        private static readonly string _pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
+
 
         #region Constructor
 
@@ -132,7 +134,7 @@ namespace MkvMasivo
                                 progress.ProgressChanged += (o, report) =>
                                 {
                                     progressBar.Value = report.PercentComplete;
-                                    LabelPercentage.Text = report.PercentComplete + "%";
+                                    LabelInformation.Text = report.Information + " " + report.PercentComplete + "%";
                                     progressBar.Update();
                                 };
                                 await ProcessData(_filesGlobal, fbd.SelectedPath, extensions, richCommand.Text, progress);
@@ -229,7 +231,7 @@ namespace MkvMasivo
             txtFolder.Text = null;
             _fileExist = false;
             _filesGlobal = null;
-            LabelPercentage.Text = "0%";
+            LabelInformation.Text = null;
         }
 
         private Task ProcessData(List<string> files, string outputFolder, string[] extensions, string command, IProgress<ProgressReport> progress)
@@ -243,25 +245,27 @@ namespace MkvMasivo
             var progressReport = new ProgressReport();
             return Task.Run(() =>
             {
-                progressReport.PercentComplete = 0;
-                progress.Report(progressReport);
-
                 foreach (var file in ficherosFiltrados)
                 {
+                    progressReport.PercentComplete = index++ * 100 / totalProcess;
+                    progressReport.Information = file.Split('\\').Last() + " (" + index + "/" + totalProcess + ")  ";
+                    progress.Report(progressReport);
+
                     if (!_startStop)
                         break;
                     if (extensions.Contains(file.Split('.').Last()))
                     {
-                        ExecuteCmd(file, outputFolder, command);
+                        ExecuteCommand(file, outputFolder, command);
                     }
-
-                    progressReport.PercentComplete = index++ * 100 / totalProcess;
-                    progress.Report(progressReport);
                 }
+
+                progressReport.PercentComplete = index * 100 / totalProcess;
+                progressReport.Information = "Fin";
+                progress.Report(progressReport);
             });
         }
 
-        private void ExecuteCmd(string file, string outputFolder, string command)
+        private void ExecuteCommand(string file, string outputFolder, string command)
         {
             var destinyPath = outputFolder + "\\" + file.Split('\\').Last();
             destinyPath = destinyPath.Substring(0, destinyPath.LastIndexOf(".")) + ".mkv";
@@ -275,20 +279,22 @@ namespace MkvMasivo
 
             string trueCommand = command.Substring(command.IndexOf("--language 0:"));
             string fileName = file.Substring(0, file.LastIndexOf("."));
-            string pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
 
-            var cmd = "/c start /wait " + _mkvPath + " --ui-language es --output \"" + destinyPath + "\" " + Regex.Replace(trueCommand, pattern, "$1" + fileName + "$3");
+            ExecuteProcess(_mkvPath + " --ui-language es --output \"" + destinyPath + "\" " + Regex.Replace(trueCommand, _pattern, "$1" + fileName + "$3") + " & exit");
+        }
 
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
-                Arguments = cmd
-            };
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
+        public void ExecuteProcess(string Command)
+        {
+            ProcessStartInfo ProcessInfo;
+            Process Process;
+
+            ProcessInfo = new ProcessStartInfo("cmd.exe", "/K " + Command);
+            ProcessInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            ProcessInfo.CreateNoWindow = true;
+            ProcessInfo.UseShellExecute = true;
+
+            Process = Process.Start(ProcessInfo);
+            Process.WaitForExit();
         }
 
         #endregion Process
