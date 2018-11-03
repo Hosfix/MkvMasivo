@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Octokit;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,17 +23,19 @@ namespace MkvMasivo
         private string _mkvPath = "mkvmerge.exe";
         private static readonly string _pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
         private static readonly string _patternExtension = @"(\^\""\^\(\^\"" \^\"")(.*?)(\^\"" \^\""\^\)\^\"")";
-
+        FileVersionInfo fileVersion = null;
 
         #region Constructor
 
         public Form()
         {
             InitializeComponent();
-            FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            fileVersion = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.Text = "MkvMassive " + fileVersion.FileVersion;
 
             ClearAll();
+
+            var result = Task.Run(async () => { return await GetReleases(); }).Result;
 
             if (!File.Exists("mkvmerge.exe"))
             {
@@ -181,6 +186,23 @@ namespace MkvMasivo
         #endregion Events
 
         #region Process
+
+        private async Task<Release> GetReleases()
+        {
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("MkvMasivo"));
+            var release = await client.Repository.Release.GetLatest("Hosfix", "MkvMasivo");
+
+            if (!release.TagName.Equals(fileVersion.FileVersion))
+            {
+                if(MessageBox.Show("Se ha encontrado la versión "+ release.TagName +". ¿Desea que se le abra un enlace de descarga?", "Nueva versión", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    Process.Start(release.Assets[0].BrowserDownloadUrl);
+                    Close();
+                }
+            }
+
+            return release;
+        }
 
         private string[] GetAllFilesRecursive(string folderPath, string[] files)
         {
