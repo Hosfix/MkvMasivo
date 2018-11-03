@@ -247,8 +247,8 @@ namespace MkvMasivo
             {
                 foreach (var file in ficherosFiltrados)
                 {
-                    progressReport.PercentComplete = index++ * 100 / totalProcess;
-                    progressReport.Information = file.Split('\\').Last() + " (" + index + "/" + totalProcess + ")  ";
+                    progressReport.PercentComplete = index * 100 / totalProcess;
+                    progressReport.Information = file.Split('\\').Last() + " (" + index++ + "/" + totalProcess + ")  ";
                     progress.Report(progressReport);
 
                     if (!_startStop)
