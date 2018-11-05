@@ -23,7 +23,8 @@ namespace MkvMasivo
         private string _mkvPath = "mkvmerge.exe";
         private static readonly string _pattern = @"(\^\""\^\(\^\"" \^\"")(.*?)(\....\^\"" \^\""\^\)\^\"")";
         private static readonly string _patternExtension = @"(\^\""\^\(\^\"" \^\"")(.*?)(\^\"" \^\""\^\)\^\"")";
-        FileVersionInfo fileVersion = null;
+        private string _originPath = "";
+        private FileVersionInfo fileVersion = null;
 
         #region Constructor
 
@@ -59,6 +60,7 @@ namespace MkvMasivo
                     if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                     {
                         Cursor = Cursors.WaitCursor;
+                        _originPath = fbd.SelectedPath;
                         string[] files = GetAllFilesRecursive(fbd.SelectedPath, new string[0]);
                         string[] extensions = GetAllExtension(files);
 
@@ -135,6 +137,7 @@ namespace MkvMasivo
                             {
                                 _startStop = true;
                                 CambiarEstadoControles(false);
+
                                 BtnRun.Text = "Stop";
                                 var progress = new Progress<ProgressReport>();
                                 progress.ProgressChanged += (o, report) =>
@@ -263,7 +266,7 @@ namespace MkvMasivo
 
             ficherosFiltrados = files.FindAll(f => extensions.Contains(f.Split('.').Last()));
 
-            int index = 1;
+            int index = 0;
             int totalProcess = ficherosFiltrados.Count;
             var progressReport = new ProgressReport();
             return Task.Run(() =>
@@ -276,10 +279,8 @@ namespace MkvMasivo
 
                     if (!_startStop)
                         break;
-                    if (extensions.Contains(file.Split('.').Last()))
-                    {
-                        ExecuteCommand(file, outputFolder, command);
-                    }
+
+                    ExecuteCommand(file, outputFolder, command);
                 }
 
                 progressReport.PercentComplete = 100;
@@ -290,7 +291,16 @@ namespace MkvMasivo
 
         private void ExecuteCommand(string file, string outputFolder, string command)
         {
-            var destinyPath = outputFolder + "\\" + file.Split('\\').Last();
+            var filterPath = file.Replace(_originPath + "\\", "");
+            var folder = filterPath.Split('\\');
+            var destinyFolder = outputFolder;
+            for (int i = 0; i < folder.Count() - 1; i++)
+            {
+                destinyFolder = destinyFolder + "\\" + folder[i];
+                Directory.CreateDirectory(destinyFolder);
+            }
+
+            var destinyPath = destinyFolder + "\\" + file.Split('\\').Last();
             destinyPath = destinyPath.Substring(0, destinyPath.LastIndexOf(".")) + ".mkv";
 
             if (File.Exists(destinyPath))
