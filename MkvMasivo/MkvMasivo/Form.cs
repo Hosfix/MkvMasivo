@@ -195,15 +195,17 @@ namespace MkvMasivo
             var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("MkvMasivo"));
             var release = await client.Repository.Release.GetLatest("Hosfix", "MkvMasivo");
 
-            if (!release.TagName.Equals(fileVersion.FileVersion))
+            if (release != null && !String.IsNullOrEmpty(release.TagName))
             {
-                if(MessageBox.Show("Se ha encontrado la versión "+ release.TagName +". ¿Desea que se le abra un enlace de descarga?", "Nueva versión", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                if (!release.TagName.Equals(fileVersion.FileVersion))
                 {
-                    Process.Start(release.Assets[0].BrowserDownloadUrl);
-                    Close();
+                    if (MessageBox.Show("Se ha encontrado la versión " + release.TagName + ". ¿Desea que se le abra un enlace de descarga?", "Nueva versión", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        Process.Start(release.Assets[0].BrowserDownloadUrl);
+                        Close();
+                    }
                 }
             }
-
             return release;
         }
 
