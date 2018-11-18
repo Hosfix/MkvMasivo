@@ -275,19 +275,19 @@ namespace MkvMasivo
             {
                 foreach (var file in ficherosFiltrados)
                 {
-                    progressReport.PercentComplete = index * 100 / totalProcess;
-                    progressReport.Information = file.Split('\\').Last() + " (" + index++ + "/" + totalProcess + ")  ";
+                    progressReport.PercentComplete = index++ * 100 / totalProcess;
+                    progressReport.Information = file.Split('\\').Last() + " (" + index + "/" + totalProcess + ")  ";
                     progress.Report(progressReport);
 
                     if (!_startStop)
                         break;
 
                     ExecuteCommand(file, outputFolder, command);
-                }
 
-                progressReport.PercentComplete = 100;
-                progressReport.Information = "Fin";
-                progress.Report(progressReport);
+                    progressReport.PercentComplete = index * 100 / totalProcess;
+                    progressReport.Information = file.Split('\\').Last() + " (" + index + "/" + totalProcess + ")  ";
+                    progress.Report(progressReport);
+                }
             });
         }
 
