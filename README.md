@@ -28,5 +28,6 @@ El fichero debe encontrarse en la misma carpeta que el ejecutable mkvmerge.exe.
 [![image.png](https://i.postimg.cc/vBDfsqPn/image.png)](https://postimg.cc/njbCKkfV)
 
 8. Con esto ya estará todo preparado y solo nos faltará darle a Start para seleccionar donde se van a guardar nuestros ficheros y comenzará el proceso.
+
 [![image.png](https://i.postimg.cc/HxK5swKh/image.png)](https://postimg.cc/9RdzL7cd)
 [![image.png](https://i.postimg.cc/SRM9XXbN/image.png)](https://postimg.cc/tn9Jw4gL)
