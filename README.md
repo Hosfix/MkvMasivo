@@ -5,9 +5,9 @@ El fichero debe encontrarse en la misma carpeta que el ejecutable mkvmerge.exe.
 
 ## Uso
 1. Editamos el primer fichero como ejemplo (para que funcione todos ficheros deben tener la misma estructura):
-[![fotoinicial.png](https://i.postimg.cc/mkWqwjc7/image.png)](https://postimg.cc/G8zq3kxp)
-                             [![image.png](https://i.postimg.cc/4NQdpFKb/image.png)](https://postimg.cc/ZC04SHxC)
-[![fotofinal.png](https://i.postimg.cc/TP9pGNx3/image.png)](https://postimg.cc/rdD8NJzB)
+[![fotoinicial.png](https://i.postimg.cc/KY20m2LM/image.png)](https://postimg.cc/VJKqF2Kf)
+[![image.png](https://i.postimg.cc/4NQdpFKb/image.png)](https://postimg.cc/ZC04SHxC)
+[![fotofinal.png](https://i.postimg.cc/CKsm1QH6/image.png)](https://postimg.cc/JytbYKFb)
 2. Vamos al siguiente apartado y lo dejamos apartado hasta que nos haga falta:
 [![opcion.png](https://i.postimg.cc/GpynxH7w/image.png)](https://postimg.cc/McqLWKJd)
 3. Ejecutamos el .exe localizado en la carpeta donde se encuentra mkvmerge.exe
